@@ -1,16 +1,21 @@
 import React from "react"
 import type { Guitar} from "../models"
+import type { CartActions } from "../reducers/cart-reducer"
 
 interface GuitarProps{
     guitar : Guitar,
-    addToCart : (guitar : Guitar) => void
+    dispatch : React.Dispatch<CartActions>
 } 
 
-const Guitar : React.FC<GuitarProps> = ({guitar,addToCart}) => {
+const Guitar : React.FC<GuitarProps> = ({guitar,dispatch}) => {
 
     const handleClick =()=>{
-        console.log(guitar)
-        addToCart(guitar)
+        dispatch({
+            type : 'add-to-cart',
+            payload : {
+                item :guitar
+            }
+        })
     }
     const {description,name,price,image} = guitar
   return (

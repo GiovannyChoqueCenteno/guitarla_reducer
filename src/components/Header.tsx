@@ -1,19 +1,20 @@
-import React, {  } from "react"
-import type {CartItem, Guitar} from "../models"
+import React, { useMemo } from "react"
+import type {CartItem} from "../models"
+import { CartActions } from "../reducers/cart-reducer"
 
 interface IHeaderProps{
     cart : CartItem[],
-    removeFromCart : (id : Guitar['id'])=>void,
-    increaseQuantity : (id:Guitar['id']) => void,
-    decreaseQuantity : (id: Guitar['id']) => void,
-    isEmpty : boolean,
-    cartTotal : number
-
+    dispatch : React.Dispatch<CartActions>
 }
 
-const Header : React.FC<IHeaderProps> = ({cart,removeFromCart,increaseQuantity,decreaseQuantity,isEmpty,cartTotal}) => {
-
-  return (
+const Header : React.FC<IHeaderProps> = ({cart,dispatch}) => {
+    const isEmpty = useMemo(()=>!cart.length  ,[cart])
+     const cartTotal = useMemo(()=>
+        cart.reduce((total , item) =>(
+            total = item.price * item.quantity
+        ),0)
+    ,[cart])
+    return (
     <header className="py-5 header">
         <div className="container-xl">
             <div className="row justify-content-center justify-content-md-between">
@@ -56,7 +57,12 @@ const Header : React.FC<IHeaderProps> = ({cart,removeFromCart,increaseQuantity,d
                                             <button
                                                 type="button"
                                                 className="btn btn-dark"
-                                                onClick={()=>decreaseQuantity(item.id)}
+                                                onClick={()=>dispatch({
+                                                    type : "remove-from-cart",
+                                                    payload : {
+                                                        id : item.id
+                                                    }
+                                                })}
                                             >
                                                 -
                                             </button>
@@ -64,7 +70,12 @@ const Header : React.FC<IHeaderProps> = ({cart,removeFromCart,increaseQuantity,d
                                             <button
                                                 type="button"
                                                 className="btn btn-dark"
-                                                onClick={()=>increaseQuantity(item.id)}
+                                                onClick={()=>dispatch({
+                                                    type : 'increase-quantity',
+                                                    payload : {
+                                                        id : item.id
+                                                    }
+                                                })}
                                             >
                                                 +
                                             </button>
@@ -73,7 +84,12 @@ const Header : React.FC<IHeaderProps> = ({cart,removeFromCart,increaseQuantity,d
                                             <button
                                                 className="btn btn-danger"
                                                 type="button"
-                                                onClick={()=>removeFromCart(item.id)}
+                                                onClick={()=>dispatch({
+                                                    type :'remove-from-cart',
+                                                    payload : {
+                                                        id : item.id
+                                                    }
+                                                })}
                                             >
                                                 X
                                             </button>
